@@ -75,6 +75,7 @@ class cache{
 		void setup(int, int, int);
 		void getInfo(void);
 		void getData(void);
+		void getRates(void);
 		void setTrace(std::string);
 		void setOptimization(std::string);
 		void printTrace(int);

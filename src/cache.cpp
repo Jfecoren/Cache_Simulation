@@ -75,6 +75,7 @@ void cache::getInfo(void){
 }
 
 
+
 void cache::getData(void){
 	std::cout << "Load  hits: " << load_hit << std::endl;
 	std::cout << "Store hits: " << store_hit << std::endl;
@@ -83,8 +84,8 @@ void cache::getData(void){
 	std::cout << "Store miss: " << store_miss << std::endl;
 	std::cout << "Total misses: " << miss << std::endl;
 	std::cout << "Total replaces: " << replace << std::endl;
-	double accuracy = (double)op_hit/((double)(op_hit + op_miss));
 	if(optimization){
+		double accuracy = (double)op_hit/((double)(op_hit + op_miss));
 		std::cout << std::endl;
 		std::cout << "Optimization: Way Prediction " << std::endl;
 		std::cout << "Way prediction hits: " << op_hit << std::endl;
@@ -97,13 +98,30 @@ void cache::getData(void){
 }
 
 
+void cache::getRates(void){
+	double rate = (double)hit/((double)(hit+miss));
+	std::cout << "Total hits: " << hit << std::endl;
+	std::cout << "Total misses: " << miss << std::endl;
+	std::cout << "Total replaces: " << replace << std::endl;
+	std::cout << "Hit rate: " << rate << std::endl;
+	if(optimization){
+		double accuracy = (double)op_hit/((double)(op_hit + op_miss));
+		std::cout << std::endl;
+		std::cout << "Optimization: Way Prediction " << std::endl;
+		std::cout << "Way prediction hits: " << op_hit << std::endl;
+		std::cout << "Way prediction miss: " << op_miss << std::endl;
+		std::cout << "Way prediction accuracy: " << accuracy << std::endl;
+	}
+}
+
+
 void cache::setTrace(std::string file){
 	trace.clear();
 	
 	std::ifstream traceout;
 	std::string insAddress;
 	bool insType;
-	
+	std::cout << "Loading tracefile to system..." << std::endl;
 	traceout.open(file);
 	if(!traceout){
 		std::cout << "Tracefile not found!" << std::endl;
@@ -208,11 +226,11 @@ int cache::bitExtract(int number, int k, int p){
     return (((1 << k) - 1) & (number >> (p - 1)));
 	/*
     cout << "The offset number: " <<
-        bitExtracted(tracefile[0], offset_bits, 1) << endl;
+        bitExtract(tracefile[0], offset_bits, 1) << endl;
     cout << "The index number: " <<
-        bitExtracted(tracefile[0], index_bits, offset_bits + 1) << endl;
+        bitExtract(tracefile[0], index_bits, offset_bits + 1) << endl;
 	cout << "The tag number is: " <<
-        bitExtracted(tracefile[0], tag_bits, index_bits + 1) << endl << endl;
+        bitExtract(tracefile[0], tag_bits, index_bits + 1) << endl << endl;
 	*/
 }
 
@@ -224,6 +242,17 @@ void cache::lruState(std::vector<int> lru_vector){
 
 
 void cache::simulation(std::vector<trace_base> tracefile){
+	
+	// expected cache data
+	hit = 0;
+	miss = 0;
+	replace = 0;
+	load_hit = 0;
+	store_hit = 0;
+	load_miss = 0;
+	store_miss = 0;
+	op_hit = 0;
+	op_miss = 0;
 	
 	std::vector<cache_base> simulation_vector(index_size);
 	for(int i = 0; i < index_size; i++){
