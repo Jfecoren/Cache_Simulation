@@ -9,29 +9,31 @@
 #include <cstring>
 #include <chrono>
 
-
+// Just for fun
 enum keys{
 	EXIT_KEY = 0,
 	EMPTY_KEY = -1,
 };
 
+// What a cache block needs to be found
 struct cache_block{
 	bool valid;
 	int tag;
-	//int offset;
 };
 
+// What a cache block needs to be associative
 struct cache_base{
 	std::vector<int> lru_policy;
 	std::vector<cache_block> block;
 };
 
+// What I need to load in a basic way to process the addreses
 struct trace_base{
 	bool lost;
 	int address;
 };
 
-
+// Cache Class definitino
 class cache{
 	private:
 		// expected cache data

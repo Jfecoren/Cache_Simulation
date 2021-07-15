@@ -13,7 +13,7 @@
 #define ADDRESS_HEX_SIZE 8
 #define DELIMITER ' '
 
-
+// Class Contructors & Destructor
 cache::cache(){
 	
 }
@@ -26,7 +26,7 @@ cache::~cache(){
 	
 }
 
-
+// This function makes the initial setup with the corresponding cache values to simulate
 void cache::setup(int size, int line, int ways){
 	
 	cache_size = size;
@@ -45,24 +45,24 @@ void cache::setup(int size, int line, int ways){
 	//lruState(lru_base);
 }
 
-
+// This function calls the private function simulation() to start simulating the events with the tracefile loaded
 void cache::startSimulation(void){
 	if(trace.size() == 0) std::cout << "Tracefile not loaded" << std::endl;
 	else simulation(trace);
 }
 
-
+// This function calls the private function simulation() with tracefile as argument to load it
 void cache::startSimulation(std::string filename){
 	setTrace(filename);
 	simulation(trace);
 }
 
-
+// This function calls the private function simulation() with a declared vector in main.cpp
 void cache::startSimulation(std::vector<trace_base> tracefile){
 	simulation(tracefile);
 }
 
-
+// This function gets the general info of the cache setup
 void cache::getInfo(void){
 	std::cout << std::endl;
 	std::cout << "For a " << cache_size << "kB cache, " << cache_ways << " ways & block size of " << cache_line << "B:" << std::endl; 
@@ -75,7 +75,7 @@ void cache::getInfo(void){
 }
 
 
-
+// This function gets all the result data of the simulation with or without optimization
 void cache::getData(void){
 	std::cout << "Load  hits: " << load_hit << std::endl;
 	std::cout << "Store hits: " << store_hit << std::endl;
@@ -97,7 +97,7 @@ void cache::getData(void){
 
 }
 
-
+// This function gets specific results of the data of the simulation with or without optimization
 void cache::getRates(void){
 	double rate = (double)hit/((double)(hit+miss));
 	std::cout << "Total hits: " << hit << std::endl;
@@ -114,7 +114,7 @@ void cache::getRates(void){
 	}
 }
 
-
+// This function load the tracefile
 void cache::setTrace(std::string file){
 	trace.clear();
 	
@@ -154,7 +154,7 @@ void cache::setTrace(std::string file){
 	
 }
 
-
+// This function set the optimization flag, to use or not the optimization
 void cache::setOptimization(std::string flag){
 	if(flag == "-ON" || flag == "-on") optimization = true;
 	else if(flag == "-OFF" || flag == "-off") optimization = false;
@@ -166,7 +166,7 @@ void cache::setOptimization(std::string flag){
 }
 
 
-
+// This function prints in console the tracefile loaded. Maybe you should not use this
 void cache::printTrace(int printlines){
 	if(printlines == -1) printlines = trace.size();
 	for(int tr = 0; tr < printlines; tr++)
@@ -175,6 +175,7 @@ void cache::printTrace(int printlines){
 }
 
 // PRIVATE FUNCTIONS //
+// Calls if there is any wrong parameter in setup
 void cache::setup_error(void){
 	if(cache_size == 0 || cache_line == 0 || cache_ways == 0){
 		std::cout << "Wrong cache setup..." << std::endl;
@@ -183,7 +184,7 @@ void cache::setup_error(void){
 	}
 }
 
-
+// This function process the lru vector of each block, with their respective blocks to perform the simulation of LRU Replacement Policy
 std::vector<int> cache::lru(std::vector<int> lru_vector, int used_way){
 	std::vector<int> index(cache_ways);												// index with size
 	std::vector<int> temp(cache_ways);													// temporal array
@@ -216,12 +217,12 @@ std::vector<int> cache::lru(std::vector<int> lru_vector, int used_way){
 	
 }
 
-
+// This function converts the hexadecimal address into a decimal number
 int cache::decimalAddress(std::string hexNumber){
 	return std::stol(hexNumber, nullptr , 16);
 }
 
-
+// This function extracs the decimal representation of selected bits
 int cache::bitExtract(int number, int k, int p){
     return (((1 << k) - 1) & (number >> (p - 1)));
 	/*
@@ -234,13 +235,21 @@ int cache::bitExtract(int number, int k, int p){
 	*/
 }
 
-
+// This function prints the vector passed as argument
 void cache::lruState(std::vector<int> lru_vector){
 	for(int p = 0; p < cache_ways; p++) std::cout << lru_vector[p] << " ";
 	std::cout << std::endl;
 }
 
-
+/*Function that simulates the cache with its respective parameters and generates the results
+ * This is te most importante funcion
+ * Takes the data to reset it in case it has values
+ * Takes the tracefile class vector and use the address index to go to that specific block
+ * In the respective position, compares the saved tag with address tag, then do its magic
+ * Use de lru() function to know what block has to be replaced or to know what is the least recently used way
+ * In the respective cases, plus hits or misses
+ * I thought would be cool to know how much time the simulation last
+*/
 void cache::simulation(std::vector<trace_base> tracefile){
 	
 	// expected cache data
